@@ -1,33 +1,39 @@
 # MCP distribution — free and open source
 
-This toolkit provides a **local, read-only MCP stdio server** as part of the open-source Python distribution. It does not require a subscription, login, paid plan, or hosted account.
+**Official MCP Registry listing:** `io.github.darizae/evidence-driven-qa@0.1.0` — published 2026-11-22.
 
-## Three complementary ways to use it
+- Registry: https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.darizae/evidence-driven-qa
+- Python package: https://pypi.org/project/evidence-driven-qa/0.1.0/
+- GitHub release: https://github.com/darizae/qa-toolkit/releases/tag/v0.1.0
 
-1. **Python CLI:** `qa-toolkit surface`, `qa-toolkit cases`, and `qa-toolkit audit`.
-2. **Local MCP:** `qa-toolkit-mcp --project /absolute/path` (or `uvx evidence-driven-qa --project /absolute/path`). It exposes read-only tools to coding agents.
-3. **Portable skill:** `npx skills add darizae/qa-toolkit --skill evidence-driven-qa`.
+The toolkit includes a **local, read-only MCP stdio server** under the MIT license. It has no subscription, account, or paywall.
 
-The CLI and MCP share the same deterministic modules. The agent skill asks and answers the product-intent questions; the tools safely extract API declarations and index reviewed answers.
+## Three complementary interfaces
 
-## Official MCP Registry
+1. **CLI:** `qa-toolkit surface`, `qa-toolkit cases` and `qa-toolkit audit`.
+2. **Local MCP:** `qa-toolkit-mcp --project /absolute/path` or `uvx evidence-driven-qa --project /absolute/path`. It exposes local read-only tools to coding agents.
+3. **Agent Skill:** `npx skills add darizae/qa-toolkit --skill evidence-driven-qa`.
 
-The MCP Registry is a **metadata discovery index, not an execution service**. Publication requires (a) an actually available PyPI package; (b) a `server.json` satisfying the current registry schema; (c) a PyPI README marker `mcp-name: io.github.darizae/evidence-driven-qa`; (d) publisher authentication and registry validation.
+The same deterministic modules power CLI and MCP. The portable skill guides the agent in understanding intended behavior, designing stories and indexing scenarios.
 
-The repository includes `server.json` and the README marker. The `evidence-driven-qa` entry point serves MCP through stdio, as does `qa-toolkit-mcp`.
+## MCP Registry publishing
 
-See:
-- [MCP official registry guide](https://github.com/modelcontextprotocol/registry/tree/main/docs)
-- [Package types and PyPI ownership](https://github.com/modelcontextprotocol/registry/blob/main/docs/modelcontextprotocol-io/package-types.mdx)
-- [Authentication and namespace rules](https://github.com/modelcontextprotocol/registry/blob/main/docs/modelcontextprotocol-io/authentication.mdx)
-- [PyPI publishing guide](https://docs.pypi.org/publishing/publishing-to-pypi/)
+`server.json` declares the GitHub-owned namespace `io.github.darizae/evidence-driven-qa`, PyPI package `evidence-driven-qa`, version `0.1.0` and stdio transport. PyPI confirms ownership via the README's `mcp-name: io.github.darizae/evidence-driven-qa` marker.
 
-## Hosted apps and monetization
+Registry submission used `mcp-publisher validate server.json`, GitHub-token namespace authentication and `mcp-publisher publish server.json`. The Registry verified the package and returned an active listing.
 
-A **local stdio MCP server** does not automatically become a hosted ChatGPT app or a cloud service. A hosted HTTP app needs a deployment, authentication, consent, tenant scoping, operational controls, privacy policy, and platform review. We can consider one in the future, but it is not required for the current product.
+The Registry is a discovery index; code installs from PyPI. An MCP Registry listing **is not** the same as a hosted ChatGPT app.
 
-The current direction is **free, MIT-licensed, open-source distribution**. No paid features or checkout are planned for this release. An independent future service can be considered separately, subject to platform rules.
+## Free-first future
 
-## Security and scope
+An optional hosted Streamable HTTP server could be considered with account authorization, tenant isolation and platform review. This is neither necessary nor currently implemented. The local CLI, skill and MCP server are intended to remain freely usable.
 
-All tool file requests are constrained to a designated project root. No arbitrary command execution, test running, network calls or file edits are exposed over MCP. Unknown policy requirements must be resolved from the user's project specifications, not inferred from API declarations alone.
+## Security
+
+All MCP tool file requests are constrained to an explicit project root. No arbitrary command execution, test running, network access, file edits, credential retrieval or remote integrations are exposed by the current tools. OpenAPI declarations are treated as hints, not authorization truth.
+
+## References
+
+- [MCP Registry publisher guide](https://github.com/modelcontextprotocol/registry/tree/main/docs)
+- [MCP PyPI package verification](https://github.com/modelcontextprotocol/registry/blob/main/docs/modelcontextprotocol-io/package-types.mdx)
+- [MCP publisher authentication](https://github.com/modelcontextprotocol/registry/blob/main/docs/modelcontextprotocol-io/authentication.mdx)

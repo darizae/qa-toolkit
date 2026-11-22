@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.darizae/evidence-driven-qa",
   "title": "Evidence-Driven QA",
-  "description": "Open-source, local-first API surface discovery, QA story indexing and test reference auditing via MCP.",
+  "description": "Free MCP tools for API QA questionnaires, indexed test cases and reference audits.",
   "version": "0.1.0",
   "websiteUrl": "https://github.com/darizae/qa-toolkit",
   "repository": {

@@ -1,16 +1,34 @@
-# Open-source release checklist
+# v0.1.0 release record — 2026-11-22
 
-- [ ] Package name available on PyPI and version synchronized in package, docs and MCP manifest
-- [ ] Clean virtual environment installation with Python 3.11+ plus wheel/sdist inspection
-- [ ] Unit and negative/security tests pass, including rejecting invalid and incomplete case answers
-- [ ] MCP stdio client protocol smoke: initialize, list tools, invoke surface/cases/audit
-- [ ] Agent Skill instructions and setup paths reviewed
-- [ ] Independently authored synthetic OpenAPI, requirements, questionnaire and case registry
-- [ ] No reconstructed archived or private Flowstead code, docs, fixtures, secrets or credentials
-- [ ] `server.json` schema and PyPI ownership marker validated
-- [ ] GitHub repository tagged with release commit
-- [ ] PyPI wheel and source distribution published and remotely verified
-- [ ] MCP Registry listing published and remotely verified (if publisher auth available)
-- [ ] Roadmap / issue statuses revised with actual evidence
+**Status: published on GitHub, PyPI and the official MCP Registry.**
 
-The official MCP Registry indexes metadata only; PyPI hosts the installable distribution. Publishing both is separate from building a hosted ChatGPT app.
+## Completed publication gates
+
+- [x] PyPI package name `evidence-driven-qa` and version `0.1.0` verified
+- [x] Fresh Python 3.13 virtual-environment wheel installation and CLI smoke
+- [x] 12 local tests passed, including negative case validation and an actual MCP stdio client session
+- [x] `ruff check src tests` clean
+- [x] Build generated both wheel and sdist; `twine check dist/*` passed
+- [x] `server.json` validated with official `mcp-publisher validate`
+- [x] README PyPI ownership marker matches `io.github.darizae/evidence-driven-qa`
+- [x] Original synthetic OpenAPI, reviewed answers, and indexed-case example committed
+- [x] No reconstructed-archive code or private Flowstead assets included
+- [x] GitHub annotated `v0.1.0` tag and release published
+- [x] PyPI `0.1.0` wheel and sdist uploaded and remotely verified
+- [x] Official MCP Registry entry `io.github.darizae/evidence-driven-qa@0.1.0` published and remotely confirmed **active**
+
+## Release references
+
+- Git source: https://github.com/darizae/qa-toolkit/commit/0e888d34515592fea0b3b77ad6b186309b32b7b8
+- GitHub release: https://github.com/darizae/qa-toolkit/releases/tag/v0.1.0
+- PyPI: https://pypi.org/project/evidence-driven-qa/0.1.0/
+- MCP Registry API: https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.darizae/evidence-driven-qa
+
+## Future milestones, not release claims
+
+- [ ] Agent skill exercise on an unrelated second application
+- [ ] Assertion-level proof, real test execution adapters and recorded evidence
+- [ ] Playwright artifact import, consolidated reports and additional surface adapters
+- [ ] Optional hosted HTTP MCP app
+
+No current CLI or MCP operation should be interpreted as proof of executed integration-test coverage.

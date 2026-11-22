@@ -9,7 +9,7 @@
 [![PyPI](https://img.shields.io/pypi/v/evidence-driven-qa?label=PyPI)](https://pypi.org/project/evidence-driven-qa/)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://pypi.org/project/evidence-driven-qa/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22a06b)](LICENSE)
-[![MCP](https://img.shields.io/badge/MCP-stdio-654ff0)](server.json)
+[![MCP Registry](https://img.shields.io/badge/MCP_Registry-listed-654ff0)](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.darizae/evidence-driven-qa)
 [![Agent Skills](https://img.shields.io/badge/Agent_Skills-portable-blueviolet)](skills/evidence-driven-qa/SKILL.md)
 [![Open Source](https://img.shields.io/badge/open_source-forever-2ea043)](LICENSE)
 
