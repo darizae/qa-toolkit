@@ -1,6 +1,8 @@
 <div align="center">
 
-# 🧭 Evidence-Driven QA
+<img src="assets/evidence-driven-qa-mark.svg" width="112" height="112" alt="Evidence-Driven QA sprout logo" />
+
+# Evidence-Driven QA
 
 ### From API surfaces to test stories to traceable evidence.
 
