@@ -1,31 +1,32 @@
-# Roadmap and milestone acceptance
+# Roadmap — open-source QA planning and evidence
 
-Last updated: **2026-11-22**. Milestone status reflects implemented work, not aspiration. GitHub issues are the task tracker; update this document when the public state changes.
+Updated: 2026-11-22. Issues are the canonical task tracker. A milestone is complete only when its stated acceptance conditions are achieved.
 
-| Milestone | Status | Deliverable | Exit criterion |
+| Milestone | State | Purpose | Tracking |
 | --- | --- | --- | --- |
-| [M0 — Foundations](https://github.com/darizae/qa-toolkit/issues/1) | IN PROGRESS | Public repository and initial commit published at [07cd039](https://github.com/darizae/qa-toolkit/commit/07cd039899b514053a7291a383e1f0899b60979b); original architecture, tests and reference-audit CLI exist | Still needs clean install and actual MCP client protocol smoke test |
-| [M1 — Case and evidence contracts](https://github.com/darizae/qa-toolkit/issues/2) | PLANNED | Versioned case schema, assertion-level linkage, machine-readable report | Deterministic validation fixtures and failure modes covered |
-| [M2 — Native test adapters](https://github.com/darizae/qa-toolkit/issues/3) | PLANNED | Controlled pytest execution; optional Playwright result reader | Nonzero/empty/skipped/crashed runs classified accurately |
-| [M3 — Portable QA skill](https://github.com/darizae/qa-toolkit/issues/4) | IN PROGRESS | Repository inspection, case reasoning, review, safe execution guidance | Skill works with two different projects and does not overclaim |
-| [M4 — Flowstead case study](https://github.com/darizae/qa-toolkit/issues/5) | PLANNED | Private local authorization/queue audit, controlled fault injection, redacted public report | Actual run and evidence are reproducible; no private source copied |
-| [M5 — Distributable release](https://github.com/darizae/qa-toolkit/issues/6) | PLANNED | PyPI release, portable skill distribution, MCP package metadata | Fresh-install tests, version, license, docs, security checklist |
-| [M6 — Hosted commercial MCP app](https://github.com/darizae/qa-toolkit/issues/7) | RESEARCH | Remote auth, tenant isolation, billing outside restricted in-app channels, supported app review | Compliance, user consent, privacy policy and operational reliability verified |
+| M0 — Repository and CLI | IN PROGRESS | Public MIT repo, package metadata, core tests, package install and MCP protocol smoke | [#1](https://github.com/darizae/qa-toolkit/issues/1) |
+| M1 — Question-first API design | IN PROGRESS | OpenAPI discovery, per-operation 9-question worksheet, reviewed stories, deterministic IDs, stronger case schema | [#2](https://github.com/darizae/qa-toolkit/issues/2) |
+| M2 — Evidence adapters | PLANNED | Assertion-level audits, controlled pytest runner, provenance, skipped/failed/empty fail-closed classification | [#3](https://github.com/darizae/qa-toolkit/issues/3) |
+| M3 — Agent portability | IN PROGRESS | Portable skill, setup guides for multiple hosts, second-project validation | [#4](https://github.com/darizae/qa-toolkit/issues/4) |
+| M4 — Flowstead case study | PLANNED | Read-only backend/queue coverage audit, redacted proof, safely contained fault injection | [#5](https://github.com/darizae/qa-toolkit/issues/5) |
+| M5 — Distribution and browser evidence | IN PROGRESS | PyPI, MCP metadata, Playwright evidence import, readable reports and reproducible release | [#6](https://github.com/darizae/qa-toolkit/issues/6) |
+| M6 — Optional hosted MCP | BACKLOG | Evaluate an authenticated hosted endpoint and app registration if useful; keep local core free | [#7](https://github.com/darizae/qa-toolkit/issues/7) |
 
-## Near-term task order
+## Current scope
 
-1. Complete M0 by validating a clean install and stdio MCP protocol behavior. Public GitHub initialization and milestone issues are already complete.
-2. Design a normalized case document and evidence receipt: intended outcomes, source anchors, test selector, boundary, result, SHA.
-3. Improve discovery to distinguish literal ID references from asserting tests without treating either as execution.
-4. Add a tightly bounded explicit local pytest runner, with no arbitrary shell strings and an ownership-aware environment contract.
-5. Assess Flowstead's selected cases read-only, identify one evidence gap and one controlled test fault.
-6. Add Playwright JSON consumption, then human-readable HTML report, and verify a second unrelated project.
-7. Only then prepare PyPI/official MCP Registry and optional remote ChatGPT/Claude app submission.
+**Shipped source capabilities:** local OpenAPI JSON endpoint discovery, explicit nine-question contract worksheet, validated reviewed stories, stable generated case IDs, reference audit, local MCP tools and Agent Skill.
 
-## Reporting convention
+**Not yet available:** semantic assertion verification, test generation into customer code, running integration tests on behalf of an agent, execution receipts and HTML QA dashboards. The CLI never reports a passing test without execution evidence.
 
-Use `DONE` only with a link to a commit and successful acceptance evidence. Keep `BLOCKED`, `UNVERIFIED` and `PLANNED` explicit. A case ID seen in source does not prove that a test has executed or passed.
+## Upcoming decisions
 
-## Distribution decision
+1. Stabilize the questionnaire and indexed-case schema, including continuity when endpoints rename.
+2. Choose a narrow native pytest adapter without arbitrarily executing project commands.
+3. Require exact case ID → assertion → runner result → source SHA linkage in evidence reports.
+4. Add Playwright JSON/HTML evidence import, and a second synthetic application example.
+5. Expand beyond OpenAPI discovery to GraphQL/gRPC/event/CLI surfaces.
+6. Consider remote MCP hosting only if it materially improves use; no commercial dependency is required.
 
-Use one Python distribution for core CLI + optional MCP SDK extra. A local MCP server is not a hosted app. A managed commercial plan can be added behind a separately secured service, but ChatGPT plugin digital-subscription checkout restrictions apply.
+## Evidence rule
+
+`specified_unverified` is a designed case, `referenced_unverified` is a source string match; neither is a PASS. Only observed test executions with assertions and traceable results can eventually produce `verified_pass`.

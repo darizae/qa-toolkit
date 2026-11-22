@@ -1,3 +1,3 @@
-"""Evidence-driven QA core. This is an early, read-only pre-alpha."""
+"""Evidence-Driven QA: local-first QA surface discovery and case planning."""
 
-__version__ = "0.1.0a0"
+__version__ = "0.1.0"

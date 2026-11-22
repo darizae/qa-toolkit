@@ -1,0 +1,136 @@
+{
+  "schema_version": "0.1",
+  "kind": "qa_surface_questionnaire",
+  "source_title": "Example Workspace API",
+  "operations": [
+    {
+      "method": "GET",
+      "path": "/v1/records/{record_id}",
+      "contract": {
+        "intent": [
+          "Read an existing record within the caller's workspace"
+        ],
+        "allowed": [
+          "Signed-in owner can retrieve their own record"
+        ],
+        "forbidden": [
+          "An anonymous caller has no access",
+          "A different signed-in user cannot read this record"
+        ],
+        "conditions": [
+          "The record exists and is associated with the caller"
+        ],
+        "relationships": [
+          "record.workspace_id must belong to the authenticated caller"
+        ],
+        "effects": [
+          "The request does not modify record state"
+        ],
+        "observables": [
+          "An owner gets 200 and their record",
+          "Anonymous callers get 401",
+          "Foreign and absent IDs have indistinguishable 404 bodies"
+        ],
+        "failure_modes": [
+          "Missing records and forbidden records must not expose the reason"
+        ],
+        "sources": [
+          "examples/synthetic-api/CONTRACT.md"
+        ]
+      },
+      "stories": [
+        {
+          "key": "owner-read",
+          "category": "authorization",
+          "actor": "authenticated owner",
+          "given": "A record exists in Alice's workspace",
+          "when": "Alice requests GET /v1/records/{record_id}",
+          "then": [
+            "HTTP 200 with Alice's record ID"
+          ],
+          "evidence": [
+            "HTTP response status and JSON record ID"
+          ]
+        },
+        {
+          "key": "foreign-read-nondisclosure",
+          "category": "privacy-nondisclosure",
+          "actor": "authenticated foreign user",
+          "given": "Alice has a record, Bob does not own it, and an absent record ID is available",
+          "when": "Bob fetches both Alice's and absent record IDs",
+          "then": [
+            "Both requests return HTTP 404",
+            "Sanitized responses do not disclose record existence or owner data"
+          ],
+          "evidence": [
+            "HTTP statuses and normalized response bodies"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/jobs",
+      "contract": {
+        "intent": [
+          "Submit an asynchronous job and receive a reference"
+        ],
+        "allowed": [
+          "Signed-in users may submit valid jobs"
+        ],
+        "forbidden": [
+          "Anonymous users may not submit jobs"
+        ],
+        "conditions": [
+          "A valid job payload is provided"
+        ],
+        "relationships": [
+          "Job is assigned to the submitting workspace"
+        ],
+        "effects": [
+          "Exactly one queued job is persisted for a successful request"
+        ],
+        "observables": [
+          "HTTP 202 includes a job ID",
+          "Created job state is queued in test-owned storage"
+        ],
+        "failure_modes": [
+          "Malformed payload rejected without persistent side effects"
+        ],
+        "sources": [
+          "examples/synthetic-api/CONTRACT.md"
+        ]
+      },
+      "stories": [
+        {
+          "key": "valid-job-queued",
+          "category": "lifecycle-async",
+          "actor": "authenticated user",
+          "given": "Valid job payload and an isolated queue",
+          "when": "The user sends POST /v1/jobs",
+          "then": [
+            "HTTP 202 with nonempty job ID",
+            "One job owned by this workspace enters queued state"
+          ],
+          "evidence": [
+            "HTTP response, test-owned queue observation"
+          ]
+        },
+        {
+          "key": "invalid-job-unchanged",
+          "category": "input-validation",
+          "actor": "authenticated user",
+          "given": "An invalid payload and a snapshot of owned job state",
+          "when": "The user submits the invalid job",
+          "then": [
+            "HTTP 400",
+            "No new job is persisted"
+          ],
+          "evidence": [
+            "HTTP status and comparison of test-owned job IDs"
+          ]
+        }
+      ]
+    }
+  ]
+}

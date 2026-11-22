@@ -4,31 +4,37 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "evidence-driven-qa"
-version = "0.1.0a0"
-description = "Evidence-driven integration QA for developer-owned applications"
+version = "0.1.0"
+description = "Open-source API surface discovery, indexed QA test design and MCP agent tooling"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 authors = [{ name = "Daniel Ariza" }]
-keywords = ["qa", "integration-testing", "mcp", "agent-skills", "test-traceability"]
+keywords = ["qa", "integration-testing", "mcp", "agent-skills", "test-traceability", "openapi"]
 classifiers = [
-  "Development Status :: 2 - Pre-Alpha",
+  "Development Status :: 3 - Alpha",
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
   "Topic :: Software Development :: Testing",
 ]
-dependencies = []
+dependencies = ["mcp>=2,<3"]
 
 [project.optional-dependencies]
-mcp = ["mcp>=1.12,<3"]
-dev = ["pytest>=8", "ruff>=0.8", "build>=1.2"]
+dev = ["pytest>=8", "ruff>=0.8", "build>=1.2", "twine>=6.0"]
 
 [project.scripts]
 qa-toolkit = "qa_toolkit.cli:main"
 qa-toolkit-mcp = "qa_toolkit.mcp_server:main"
+evidence-driven-qa = "qa_toolkit.mcp_server:main"
 
 [project.urls]
 Repository = "https://github.com/darizae/qa-toolkit"
 Issues = "https://github.com/darizae/qa-toolkit/issues"
+Documentation = "https://github.com/darizae/qa-toolkit#readme"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -36,3 +42,7 @@ where = ["src"]
 [tool.ruff]
 target-version = "py311"
 line-length = 100
+
+[tool.ruff.lint]
+# Input validation consistently raises ValueError for user-facing CLI errors.
+ignore = ["TRY004"]

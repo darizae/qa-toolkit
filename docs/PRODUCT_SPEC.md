@@ -1,54 +1,57 @@
 # Product contract — Evidence-Driven QA Toolkit
 
-Status: **proposed architecture; read-only pre-alpha implemented** (2026-11-22).
+Status: **early open-source release** (2026-11-22).
 
 ## Problem
 
-Repositories can contain many tests yet lack verifiable evidence that security, data isolation, asynchronous states and failure recovery satisfy their intended contracts. A matching test name or case ID is not proof that the expected behavior was observed.
+Repositories often have tests but lack a systematic process for deriving the right tests from their intended API contracts. Existing test names and IDs provide little assurance that all allowed, denied, conditional, lifecycle and failure behaviors have been exercised.
 
-## Target users
+## Model
 
-Independent developers, small teams and maintainers of API-backed applications who already own a test framework and want better test completeness and auditable execution evidence.
+The complete direction is:
 
-## Product promise
+```text
+testable API surface
+  → agent asks and answers contract questions for each operation
+  → actor / data / state equivalence classes
+  → explicit test stories
+  → deterministic indexed test IDs
+  → assertion-level coverage inspection
+  → controlled execution and verifiable evidence
+```
 
-From a documented behavior to a traceable test, approved execution and reproducible evidence. The agent reasons about expected behavior; a deterministic core performs discovery, execution and reporting.
+The first five steps are partly implemented (endpoint discovery, questionnaire, indexed case generation and static reference audit); the agent currently performs the semantic reasoning and requirement discovery. Execution and report orchestration are future work.
 
-## Three clients, one core
+## Inputs, responsibilities and truth
 
-1. Python CLI for local automation and CI integration.
-2. MCP server tools for agents, initially read-only stdio; optionally remote authenticated server later.
-3. Portable Agent Skill for discovery, test proposal, review and evidence interpretation.
+- **OpenAPI/Swagger JSON**: discovery of actually declared HTTP operations, inputs, outputs and security hints. It cannot prove intended business policy.
+- **Product specification**: truth for who is allowed, forbidden, conditions, relationships, effects, expected outcomes and failure rules.
+- **Agent Skill**: question-first analysis, gap detection, planning and proposal of test stories. Unknown intended requirements should be asked, not guessed.
+- **Core CLI and MCP**: bounded, deterministic read-only extraction/validation, reproducible IDs and test-source ID matching.
+- **Existing tests**: evidence of coverage only after assertions have been reviewed; passing status requires actual execution evidence.
 
-No requirement to use an LLM for deterministic CLI or report operations.
+## Test families
 
-## Design priorities
+Authentication/authorization, data isolation, input validation and boundaries, resource relationship/existence, privacy/non-disclosure, async lifecycle/worker recovery, concurrency, idempotency, transactional integrity, pagination, ordering, failure responses, rate limiting, exports, compatibility and domain-specific rules. Not every endpoint requires every dimension.
 
-- Native pytest/Playwright adapters before inventing new test DSLs.
-- Stable case identities with explicit expected outcomes.
-- Public-contract assertions first; storage/broker/DB/browser assertions only when necessary to prove required side effects.
-- Resource-data equivalence classes: own/foreign/absent; valid/invalid; queued/finished/failed; same/related/unrelated; safe isolation.
-- Shared stack for owner-isolated scenarios, private controllable stack when a test mutates global infrastructure or timing.
-- Clear distinction between *unreferenced*, *referenced*, *verified* and *passed*.
-- Reproducible evidence tied to repository SHA, environment, command, test selector, test output, timestamp and redaction policy.
-- No arbitrary shell execution by remotely accessible MCP tools.
-- Safe failure on unknown project ownership, infrastructure status or destructive operations.
+## Surfaces and packaging
 
-## MVP boundary
+- Python CLI: `qa-toolkit`.
+- Local MCP stdio server: `qa-toolkit-mcp` or `evidence-driven-qa`.
+- Portable skill: `skills/evidence-driven-qa/SKILL.md`.
+- Registry metadata: `server.json`.
 
-**Implemented now:** parse IDs from Markdown table first columns, find candidate references in test sources, emit JSON; optional MCP wrapper exposes the same read-only operation and enforces a configured project path.
+Single Python package, MIT license. Hosted HTTP app and any paid offerings are optional future work, not prerequisites.
 
-**Next:** parse stronger case definitions and test markers, add assertion review workflow, a saved schema-valid report with execution evidence, then controlled pytest adapter. Playwright, remote MCP, hosted history and payments are later work.
+## Current functionality
 
-## Out of scope for first release
+`qa-toolkit surface --openapi <local.json> --json` returns an editable JSON questionnaire. `qa-toolkit cases --answers <reviewed.json>` compiles stories with deterministic IDs and `specified_unverified` status. `qa-toolkit audit --plan <plan.md> --tests <folder>` finds candidate case ID references; no tests are run or marked PASS. The MCP server exposes the same operations without writing files.
 
-- Autonomous unattended test execution against unknown applications.
-- Automatic destructive database or cloud-service provisioning.
-- A replacement for pytest, Playwright or application CI.
-- Production penetration testing or security certification.
-- Model-hosted paid checkout or an operational SaaS platform.
-- Publishing private Flowstead materials or reconstructed static sources.
+## Deferred
 
-## Acceptance demonstration
+- Deriving requirements without human/agent reasoning.
+- Automatic source edits, arbitrary test execution and infrastructure orchestration.
+- Assertion semantic checking, execution receipts, Playwright artifacts and HTML reports.
+- Hosted remote MCP and app marketplace integrations.
 
-Use Flowstead as a private local case study with operator/Plant isolation and forecast queue behavior. The public repo contains only original, synthetic demonstration materials and independently authored evaluation summaries. Verify usefulness on an unrelated second application before claiming framework generality.
+For a worked example, see [the QA methodology](WORKFLOW.md) and [synthetic API fixture](../examples/synthetic-api/CONTRACT.md). A private Flowstead application may be used for local evaluation, without distributing its source or fixtures.

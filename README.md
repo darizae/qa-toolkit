@@ -1,128 +1,252 @@
-# Evidence-Driven QA Toolkit
+<div align="center">
 
-[![Status: pre-alpha](https://img.shields.io/badge/status-pre--alpha-orange)](docs/ROADMAP.md)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+# 🧭 Evidence-Driven QA
 
-**An agent-assisted, evidence-first QA toolkit for developer-owned applications.**
+### From API surfaces to test stories to traceable evidence.
 
-One core, three intended interfaces: a Python CLI, an MCP server, and a portable agent skill. The eventual goal is to trace requirements to meaningful integration tests, execute authorized tests against real application boundaries, and create auditable evidence. **The current pre-alpha only scans case references; it does not run tests or certify coverage.**
+**Discover · Question · Specify · Index · Audit**
 
-## What works now
+[![PyPI](https://img.shields.io/pypi/v/evidence-driven-qa?label=PyPI)](https://pypi.org/project/evidence-driven-qa/)
+[![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://pypi.org/project/evidence-driven-qa/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-22a06b)](LICENSE)
+[![MCP](https://img.shields.io/badge/MCP-stdio-654ff0)](server.json)
+[![Agent Skills](https://img.shields.io/badge/Agent_Skills-portable-blueviolet)](skills/evidence-driven-qa/SKILL.md)
+[![Open Source](https://img.shields.io/badge/open_source-forever-2ea043)](LICENSE)
 
-- `qa-toolkit audit`: reads stable case IDs from first-column Markdown tables and locates candidate references in Python/JS/TS test files.
-- `qa-toolkit-mcp`: optional local **stdio** MCP server exposing `qa_capabilities` and `qa_audit_case_references`, scoped to an explicit project root.
-- `skills/evidence-driven-qa/SKILL.md`: portable agent guidance for conservative, evidence-backed QA work.
-- Unit tests for reference discovery and MCP file-path confinement.
+**An open-source Python CLI, local MCP server and portable Agent Skill for systematic QA planning.**
 
-**Not yet implemented:** verification of assertion quality, test generation, test execution/orchestration, artifact collection, HTML reports, remote MCP hosting, GitHub Action, registry/PyPI publishing, billing, or autonomous QA. Any reference found remains `referenced_unverified`.
+[Quick start](#-quick-start) · [The methodology](#-how-it-works) · [Agent setup](#-agent-setup) · [MCP setup](#-mcp-server-setup) · [Documentation](#-documentation)
 
-## Install the Python CLI (from this checkout)
+</div>
 
-Requirements: Python 3.11 or newer.
+---
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -e .
-qa-toolkit --version
+## ✦ The idea
+
+Great integration tests begin **before** writing test code. First map the actual API surface. For every operation ask: *who may do this, who must be denied, what conditions and relationships must hold, what changes, and what observable result would prove it?* Convert the answers into test stories, assign durable case IDs, and then inspect the existing test suite.
+
+```text
+    OPENAPI / SOURCE CONTRACT
+              │
+              ▼
+   ① DISCOVER TESTABLE SURFACE
+      endpoints · actors · states
+              │
+              ▼
+   ② ASK & ANSWER QUESTIONS
+      allowed? forbidden? conditions?
+      relationships? effects? proof?
+              │
+              ▼
+   ③ DESIGN TEST STORIES
+      positive · negative · edge cases
+              │
+              ▼
+   ④ CREATE INDEXED CASES
+      stable IDs · expected evidence
+              │
+              ▼
+   ⑤ AUDIT EXISTING TESTS
+      reference matching (not a PASS)
+              │
+              ▼
+   ⑥ IMPLEMENT → EXECUTE → REPORT
+         planned next stages
 ```
 
-Audit an existing indexed Markdown test plan:
+The design is **agent-assisted, deterministic at the tool boundary**. AI agents reason about semantics and ask for missing product decisions. The Python core extracts the surface, validates reviewed stories, generates consistent case IDs and searches existing test sources. It never guesses an authorization policy from OpenAPI or treats a matching test ID as proof of a passing test.
+
+## ✦ Quick start
+
+Install the package (Python 3.11+):
 
 ```bash
-qa-toolkit audit \
-  --plan /absolute/path/to/project/docs/testing/INDEXED_TEST_PLAN.md \
-  --tests /absolute/path/to/project/backend/tests \
-  --json
+pip install evidence-driven-qa
 ```
 
-This produces JSON on stdout. `referenced_unverified` means **a candidate text reference**, never a passing test, proof of a working assertion, or verified behavioral coverage. `unreferenced` is a candidate gap, not definitive absence of coverage. This first adapter expects case IDs in the **first column of Markdown tables**. No network access, test runs, writes, or project changes are performed by `audit`.
-
-## Agent setup
-
-Install the generic Agent Skill into whichever coding agent you use. Review the skill and give the agent only the repository access it needs. The skill is model-agnostic; file discovery conventions differ by client.
-
-**Claude Code — user-level skill:**
+Or run without a permanent installation using `uvx`:
 
 ```bash
-mkdir -p ~/.claude/skills/evidence-driven-qa
-cp skills/evidence-driven-qa/SKILL.md \
-  ~/.claude/skills/evidence-driven-qa/SKILL.md
+uvx --from evidence-driven-qa qa-toolkit --help
 ```
 
-**Codex / project-local agents — project skill folder:**
+**1 · Discover the HTTP API surface** from a saved local OpenAPI JSON file:
 
 ```bash
-mkdir -p /absolute/path/to/your-project/.agents/skills/evidence-driven-qa
-cp skills/evidence-driven-qa/SKILL.md \
-  /absolute/path/to/your-project/.agents/skills/evidence-driven-qa/SKILL.md
+qa-toolkit surface --openapi openapi.json --json > qa-surface.json
 ```
 
-Then ask the agent: **“Audit the indexed QA cases against existing tests. Identify candidate gaps, distinguish references from verified assertions, and do not execute anything without approval.”** For current functionality, point it to the local CLI below.
+This produces an editable per-endpoint questionnaire: declared routes, input parameters, response codes, available testing topics, and questions about intended behavior.
 
-### Optional local MCP server
+**2 · Answer the contract questions and write test stories.** Give `qa-surface.json` and the application's requirements to your agent. Ask it to complete the `contract` and `stories` fields using evidence from your project's specification, and to flag ambiguous requirements. Review its answers before compiling them.
 
-Install the optional MCP SDK alongside the CLI:
+**3 · Create indexed test cases:**
 
 ```bash
-python -m pip install -e '.[mcp]'
+qa-toolkit cases --answers qa-surface.json > INDEXED_TEST_PLAN.md
 ```
 
-Start a **stdio** MCP server scoped to a single project:
+Or use `--json` to produce a machine-readable registry. Generated IDs are deterministic for each `method + path + story key` and every new case starts as `specified_unverified`.
+
+**4 · Audit the tests that already exist:**
 
 ```bash
-qa-toolkit-mcp --project /absolute/path/to/your-project
+qa-toolkit audit --plan INDEXED_TEST_PLAN.md --tests tests/ --json
 ```
 
-A stdio server is started by an MCP client, not normally run interactively. For a Claude Code client, an example registration is:
+The audit finds potential matches in pytest/Vitest/Playwright test source files. A reference is marked `referenced_unverified`, not covered or passed. Assertion-level review and executed test evidence are separate stages.
+
+> **Try the independent synthetic example:** [example API contract](examples/synthetic-api/CONTRACT.md), [OpenAPI file](examples/synthetic-api/openapi.json), [reviewed answers](examples/synthetic-api/answers.json). These are fictitious fixtures, not production data.
 
 ```bash
-claude mcp add qa-toolkit -- \
-  /absolute/path/to/qa-toolkit/.venv/bin/qa-toolkit-mcp \
-  --project /absolute/path/to/your-project
+qa-toolkit surface --openapi examples/synthetic-api/openapi.json
+qa-toolkit cases --answers examples/synthetic-api/answers.json
 ```
 
-Or configure the client with the equivalent `command`, `args`, and stdio transport. The server exposes:
+## ✦ How it works
 
-- `qa_capabilities()` — current capabilities and limitations.
-- `qa_audit_case_references(plan_path, tests_path)` — read-only audit using paths **inside** the configured project.
+The workflow is **endpoint-by-endpoint**, but not merely endpoint-by-endpoint testing. Resource *relationships*, *states*, and *actors* matter as much as HTTP routes.
 
-**Do not configure this stdio process as a public ChatGPT app.** A hosted ChatGPT-compatible app needs a separately deployed, authenticated, network-accessible MCP endpoint and platform review. That is a future milestone, not a capability of this initial checkout.
-
-## Flowstead case study
-
-[Flowstead](https://github.com/darizae/flowstead) is the planned real-app case study: FastAPI, PostgreSQL, NATS/JetStream, JWT authorization, and React/Playwright. Its GitHub repository is currently private; the public QA toolkit must not assume visitors can access it.
-
-This repo contains **no copied Flowstead source, tests, fixtures, credentials, or documentation**, and no code from the static archived reference. Case-study instructions and the intended validation approach are in [examples/flowstead](examples/flowstead/README.md). Do not run the reference archive.
-
-## Architecture and planning
-
-| Surface | Current implementation | Planned role |
+| Step | Questions the agent answers | Output |
 | --- | --- | --- |
-| Python core / CLI | Read-only reference audit | Case registry, adapters, controlled executor, evidence and reports |
-| Local MCP server | Read-only stdio tool | Agent-friendly audited operations |
-| Portable skill | QA workflow instructions | Discover, propose, review, verify and report |
-| Remote MCP app | Not implemented | Optional authenticated hosted service and UI |
+| **Surface discovery** | What endpoints, verbs, parameters, responses and security declarations exist? | OpenAPI inventory |
+| **Intended behavior** | What user/business capability should this operation provide? | Requirement-backed contract |
+| **Allowed vs forbidden** | Who is permitted? Who must be denied, including anonymous and foreign owners? | Actor/access matrix |
+| **Conditions & relationships** | Which resource IDs, ownership, tenant, parent/child relations and lifecycle states must hold? | Test-data dimensions |
+| **Side effects & observability** | What changes or stays unchanged? How do we prove that from HTTP and persistent state? | Concrete assertion targets |
+| **Stories & case IDs** | Which positive, forbidden, invalid, missing and transition scenarios expose a meaningful bug? | Stable indexed cases |
+| **Audit & evidence** | Which existing tests actually assert these outcomes and which have run? | References now; verified execution planned |
 
-- [Product contract](docs/PRODUCT_SPEC.md)
-- [Roadmap with acceptance criteria](docs/ROADMAP.md)
-- [Evidence and case schema](docs/EVIDENCE_MODEL.md)
-- [MCP publication and monetization strategy](docs/MCP_COMMERCIALIZATION.md)
-- [Decisions and provenance](docs/DECISIONS.md)
-- [Release checklist](docs/RELEASE_CHECKLIST.md)
-- [GitHub issues](https://github.com/darizae/qa-toolkit/issues) track milestone work
+### More than security testing
 
-## Development
+Test stories can target **authentication and authorization**, **input validation**, **business rules**, **resource isolation**, **information disclosure**, **pagination and filtering**, **async queues and timeouts**, **idempotency and retries**, **concurrency**, **data integrity**, **error contracts**, **rate limiting**, **exports**, **compatibility**, **accessibility** and **failure recovery**. Select applicable dimensions—not a mechanically generated Cartesian product of every possible input.
+
+For example, a negative authorization story may require checking both the rejected status **and** that the response reveals nothing about a foreign record. For an asynchronous job, the required proof may include a real queued state followed by an eventual completion in a disposable environment. See the [complete methodology](docs/WORKFLOW.md).
+
+## ✦ Agent setup
+
+The skill supplies a reusable workflow for discovering contract gaps and writing meaningful, indexed test stories. It can work with any agent that supports the [Agent Skills standard](https://agentskills.io/specification).
+
+**Install to supported coding agents:**
 
 ```bash
-PYTHONPATH=src python3 -m unittest discover -s tests -v
-PYTHONPATH=src python3 -m qa_toolkit.cli --version
+npx skills add darizae/qa-toolkit --skill evidence-driven-qa
 ```
 
-The CLI has **no arbitrary shell-execution command** in the pre-alpha. Running integration tests, touching external resources, or proposing patches belongs to future, explicitly approved work.
+Or install manually:
 
-## Licensing and commercialization
+```bash
+# Claude Code — user-level
+mkdir -p ~/.claude/skills/evidence-driven-qa
+cp skills/evidence-driven-qa/SKILL.md ~/.claude/skills/evidence-driven-qa/
 
-MIT-licensed open core; possible paid value in managed QA monitoring, team evidence retention, cross-repository dashboards and integrations. An MCP Registry listing is **discovery metadata, not a storefront**. Current ChatGPT plugin commerce restrictions must be respected, especially restrictions on in-plugin sales/upselling of digital subscriptions. See [the commercialization plan](docs/MCP_COMMERCIALIZATION.md) before shipping any paid app.
+# Codex / cross-agent project-level
+mkdir -p .agents/skills/evidence-driven-qa
+cp skills/evidence-driven-qa/SKILL.md .agents/skills/evidence-driven-qa/
+```
 
-This repository is an early portfolio project. Do not present planned capabilities as shipping or make claims about test outcomes that have not been executed.
+**Suggested first agent instruction:**
+
+> Use the evidence-driven-qa skill. Discover the testable API surface, inspect the requirements for each endpoint, answer who is allowed or denied and under which conditions, then design positive/negative/edge test stories. Produce stable case IDs and audit existing tests. Call out any unresolved business rules; do not assume implementation behavior is the intended contract.
+
+### Model and coding-agent ecosystem
+
+The toolkit does not depend on a particular language model. Via compatible coding agents or MCP-capable hosts, it is suitable for workflows using these common model families:
+
+| Model family | Example agent/host |
+| --- | --- |
+| **OpenAI GPT models** (GPT-6, GPT-5 series, GPT-4o) | Codex and other MCP-aware clients |
+| **Anthropic Claude** (Opus, Sonnet, Haiku) | Claude Code, Claude Desktop |
+| **Google Gemini** (Pro, Flash) | Gemini CLI and compatible agent hosts |
+| **Meta Llama, Qwen, Mistral, DeepSeek** | Local or hosted models through MCP-capable agent runtimes |
+| **xAI Grok** | MCP-capable agent integrations |
+
+**MCP integration is provided by the host or agent runtime, not by model weights themselves.** The generic skill can also be read as instructions by agents without MCP support.
+
+## ✦ MCP server setup
+
+The Python distribution also provides **`qa-toolkit-mcp`**, a local, read-only **stdio** server using the same core as the CLI. No hosted account, API key, or commercial license is required.
+
+**Claude Code**
+
+```bash
+claude mcp add --transport stdio qa-toolkit -- \
+  uvx --from evidence-driven-qa qa-toolkit-mcp --project /absolute/path/to/your/project
+```
+
+**Codex CLI**
+
+```bash
+codex mcp add qa-toolkit -- \
+  uvx --from evidence-driven-qa qa-toolkit-mcp --project /absolute/path/to/your/project
+```
+
+**Generic MCP stdio client configuration** (replace the project path):
+
+```json
+{
+  "mcpServers": {
+    "qa-toolkit": {
+      "command": "uvx",
+      "args": [
+        "--from", "evidence-driven-qa",
+        "qa-toolkit-mcp",
+        "--project", "/absolute/path/to/your/project"
+      ]
+    }
+  }
+}
+```
+
+The MCP server exposes four read-only tools:
+
+| Tool | Purpose |
+| --- | --- |
+| `qa_capabilities` | List operations and current evidence limits |
+| `qa_discover_api_surface` | Load a local OpenAPI JSON file and return the questionnaire |
+| `qa_compile_indexed_cases` | Compile reviewed answers into indexed case records |
+| `qa_audit_case_references` | Match case IDs against test-source references |
+
+All paths are restricted to the selected project root. The MCP tools do not launch applications, run shell commands, modify files, access credentials, or connect to external services. The local stdio package is distinct from a hosted HTTPS ChatGPT app.
+
+## ✦ Open-source by design
+
+**MIT-licensed.** Free to use, study, modify, fork, redistribute and build upon—including commercial use under the terms of the license. The MCP server is part of the same open-source project; no subscription or paid account is needed.
+
+**Contributions welcome:** bug reports, adapters, security improvements, documentation and reproducible examples. Open an [issue](https://github.com/darizae/qa-toolkit/issues) before substantial API or schema changes.
+
+This is an early release of the **discovery and planning workflow**. Test generation into project-native source, controlled test execution, browser evidence ingestion and HTML reports are on the [roadmap](docs/ROADMAP.md). No current command claims to verify or certify test coverage.
+
+## ✦ Documentation
+
+| Document | Why it matters |
+| --- | --- |
+| [QA methodology](docs/WORKFLOW.md) | API questions, equivalence classes and story generation |
+| [Product contract](docs/PRODUCT_SPEC.md) | Scope and architecture |
+| [Case & evidence schema](docs/EVIDENCE_MODEL.md) | Traceability and status semantics |
+| [Roadmap](docs/ROADMAP.md) | Features and GitHub issue tracking |
+| [MCP distribution](docs/MCP_DISTRIBUTION.md) | Registry and free local server strategy |
+| [Release checklist](docs/RELEASE_CHECKLIST.md) | Release hygiene |
+| [Flowstead case study](examples/flowstead/README.md) | Private real-world validation plan |
+
+Development:
+
+```bash
+python -m pip install -e '.[dev]'
+python -m unittest discover -s tests -v
+ruff check src tests
+```
+
+**Provenance:** All distributed code and examples in this repository were authored independently. The public package contains no reconstructed archived source, archived documentation, or private Flowstead fixtures.
+
+---
+
+<div align="center">
+
+**Better questions → better test stories → better evidence.**
+
+[GitHub](https://github.com/darizae/qa-toolkit) · [Issues](https://github.com/darizae/qa-toolkit/issues) · [MIT License](LICENSE)
+
+</div>
+
+<!-- mcp-name: io.github.darizae/evidence-driven-qa -->

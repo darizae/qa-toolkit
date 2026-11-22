@@ -1,0 +1,24 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.darizae/evidence-driven-qa",
+  "title": "Evidence-Driven QA",
+  "description": "Open-source, local-first API surface discovery, QA story indexing and test reference auditing via MCP.",
+  "version": "0.1.0",
+  "websiteUrl": "https://github.com/darizae/qa-toolkit",
+  "repository": {
+    "url": "https://github.com/darizae/qa-toolkit",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "pypi",
+      "registryBaseUrl": "https://pypi.org",
+      "identifier": "evidence-driven-qa",
+      "version": "0.1.0",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

@@ -1,18 +1,16 @@
-# Release checklist (not yet satisfied)
+# Open-source release checklist
 
-- [ ] Package name availability confirmed on PyPI; consistent version and metadata
-- [ ] Clean editable install on supported Python versions
-- [ ] CLI unit and integration tests run; negative/error handling verified
-- [ ] MCP local stdio protocol manually smoke-tested with supported client
-- [ ] Agent skill frontmatter and guidance validated on at least two repositories
+- [ ] Package name available on PyPI and version synchronized in package, docs and MCP manifest
+- [ ] Clean virtual environment installation with Python 3.11+ plus wheel/sdist inspection
+- [ ] Unit and negative/security tests pass, including rejecting invalid and incomplete case answers
+- [ ] MCP stdio client protocol smoke: initialize, list tools, invoke surface/cases/audit
+- [ ] Agent Skill instructions and setup paths reviewed
+- [ ] Independently authored synthetic OpenAPI, requirements, questionnaire and case registry
 - [ ] No reconstructed archived or private Flowstead code, docs, fixtures, secrets or credentials
-- [ ] Independent synthetic examples and realistic redacted example reports
-- [ ] Static-reference audits never report tests as passed
-- [ ] Explicit opt-in/sandbox controls for any future execution feature
-- [ ] Threat model, privacy and vulnerability disclosure process
-- [ ] License and distribution/commercial terms reviewed
-- [ ] Source commit, release tag, build artifacts and checksums recorded
-- [ ] PyPI release separately approved and actually published
-- [ ] Official MCP Registry server.json validated then separately published
-- [ ] Remote MCP app security/operations and platform review before any marketplace claim
-- [ ] Pricing, business registration and checkout compliance reviewed separately
+- [ ] `server.json` schema and PyPI ownership marker validated
+- [ ] GitHub repository tagged with release commit
+- [ ] PyPI wheel and source distribution published and remotely verified
+- [ ] MCP Registry listing published and remotely verified (if publisher auth available)
+- [ ] Roadmap / issue statuses revised with actual evidence
+
+The official MCP Registry indexes metadata only; PyPI hosts the installable distribution. Publishing both is separate from building a hosted ChatGPT app.

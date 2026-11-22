@@ -14,10 +14,19 @@ def _test_file(path: Path) -> bool:
     return path.suffix in TEST_SUFFIXES and (
         name.startswith("test_")
         or name.endswith("_test.py")
-        or any(name.endswith(suffix) for suffix in (
-            ".test.ts", ".test.tsx", ".test.js", ".test.jsx",
-            ".spec.ts", ".spec.tsx", ".spec.js", ".spec.jsx",
-        ))
+        or any(
+            name.endswith(suffix)
+            for suffix in (
+                ".test.ts",
+                ".test.tsx",
+                ".test.js",
+                ".test.jsx",
+                ".spec.ts",
+                ".spec.tsx",
+                ".spec.js",
+                ".spec.jsx",
+            )
+        )
     )
 
 
@@ -55,6 +64,11 @@ def audit_case_references(plan: Path, tests: Path) -> dict:
         if not path.is_file() or not _test_file(path):
             continue
         if any(part in {".venv", "node_modules", ".git"} for part in path.parts):
+            continue
+        # A test tree may contain symlinks; do not follow files outside it.
+        if not path.resolve(strict=True).is_relative_to(tests):
+            continue
+        if path.stat().st_size > 1_000_000:
             continue
         scanned += 1
         # A string reference is only a candidate. Never call it a PASS.

@@ -1,14 +1,16 @@
 # Product decisions and provenance
 
-2026-11-22 — Initial direction:
+2026-11-22 — Active decisions:
 
-1. **Separate public repo:** `darizae/qa-toolkit`, locally at `~/repos/qa-toolkit`; do not add code or docs to Flowstead to distribute this product.
-2. **Python core:** one package, `evidence-driven-qa` (distribution name provisional until PyPI availability is verified), with `qa-toolkit` CLI and optional `qa-toolkit-mcp` stdio adapter.
-3. **Portable Agent Skill:** `skills/evidence-driven-qa/SKILL.md`, manual project/user-level installation initially. Marketplace manifests are deferred until validated against target platforms.
-4. **Open core:** MIT license for independently authored starter. Paid value, if developed, will be in managed services, support and team features; no billing implemented.
-5. **Flowstead case study:** real user-owned example, currently private; never copy its code, docs or fixtures into this public repository. Publish only independent synthetic examples and redacted evidence with authorization.
-6. **Static archived reference:** analyzed for abstract engineering principles only. No reconstructed source, documentation, naming, implementation, data, auth or infrastructure artifacts may enter this project.
-7. **Truth in QA:** static references cannot certify coverage; model uncertainty and evidence explicitly.
-8. **Safety:** MCP v0 is local stdio, read-only, bounded to a project path, with no execution or network operations. Future remote MCP requires authentication, tenant-level isolation and reviewed tools.
+1. **Separate open-source repo:** `darizae/qa-toolkit` / `~/repos/qa-toolkit`.
+2. **Question-first flow:** API surface → nine questions per operation → approved behavioral contract → meaningful stories → stable indexed cases → test mapping → actual evidence.
+3. **Python core:** one package `evidence-driven-qa`, CLI `qa-toolkit`, local stdio MCP server `qa-toolkit-mcp` / `evidence-driven-qa`.
+4. **Portable Agent Skill:** project/user-level `evidence-driven-qa` following the Agent Skills specification.
+5. **Open source:** MIT license across the CLI, MCP tools and skill. No required paid account, commercial dependency or checkout.
+6. **Local-first safety:** MCP is read-only, project-path confined and lacks arbitrary command execution. Requirements cannot be inferred as guaranteed by OpenAPI security hints.
+7. **Stable IDs:** generated from HTTP method, path and story key; no case is a test PASS until assertion quality and actual execution evidence are established.
+8. **Flowstead case study:** separate private application; no source, docs, secrets or fixtures copied into public repo.
+9. **Archived static reference:** conceptual analysis only; never copied, vendored, executed or published.
+10. **Optional future:** official MCP Registry discovery; hosted HTTP/ChatGPT app and commercialization only if separately decided. The free local server remains a first-class release.
 
-Tradeoffs: this first public commit deliberately implements only conservative discovery instead of pretending to provide autonomous testing. Version and product name can change before a stable PyPI release.
+Package distribution details are tracked in [MCP_DISTRIBUTION.md](MCP_DISTRIBUTION.md); milestones in [ROADMAP.md](ROADMAP.md).

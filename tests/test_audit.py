@@ -17,9 +17,7 @@ class AuditTests(unittest.TestCase):
             "| `AUTH-001` | First |\n"
             "| `QUEUE-002`, `QUEUE-003` | More |\n"
         )
-        self.assertEqual(
-            extract_plan_ids(source), ["AUTH-001", "QUEUE-002", "QUEUE-003"]
-        )
+        self.assertEqual(extract_plan_ids(source), ["AUTH-001", "QUEUE-002", "QUEUE-003"])
 
     def test_reference_never_counts_as_verified_execution(self):
         with tempfile.TemporaryDirectory() as temp:
