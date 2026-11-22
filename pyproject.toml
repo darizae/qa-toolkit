@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "evidence-driven-qa"
+version = "0.1.0a0"
+description = "Evidence-driven integration QA for developer-owned applications"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Daniel Ariza" }]
+keywords = ["qa", "integration-testing", "mcp", "agent-skills", "test-traceability"]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Programming Language :: Python :: 3",
+  "Topic :: Software Development :: Testing",
+]
+dependencies = []
+
+[project.optional-dependencies]
+mcp = ["mcp>=1.12,<3"]
+dev = ["pytest>=8", "ruff>=0.8", "build>=1.2"]
+
+[project.scripts]
+qa-toolkit = "qa_toolkit.cli:main"
+qa-toolkit-mcp = "qa_toolkit.mcp_server:main"
+
+[project.urls]
+Repository = "https://github.com/darizae/qa-toolkit"
+Issues = "https://github.com/darizae/qa-toolkit/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100

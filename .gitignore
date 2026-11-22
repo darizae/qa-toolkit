@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+.coverage
+htmlcov/
+
+# Secrets, credentials, generated evidence
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.evidence-qa/
+qa-evidence/
+*.sqlite3
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
