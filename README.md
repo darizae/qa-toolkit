@@ -252,3 +252,7 @@ ruff check src tests
 </div>
 
 <!-- mcp-name: io.github.darizae/evidence-driven-qa -->
+
+## Agent-assisted setup
+
+[Open the agent setup page](https://darizae.github.io/qa-toolkit/) or [copy the plain-text prompt](docs/agent-setup.txt) into your coding agent. Review its proposed changes and verification results.
